@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -33,6 +35,7 @@ import androidx.compose.material3.NavigationRailItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -84,6 +87,7 @@ import com.example.ui.viewmodel.AdminSubScreen
 import com.example.ui.viewmodel.AppTab
 import com.example.ui.viewmodel.MainViewModel
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -93,16 +97,67 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val firebaseReady = ensureFirebaseInitialized()
         setContent {
             MahadevTradersTheme {
-                AppNavigation()
+                if (firebaseReady) {
+                    AppNavigation()
+                } else {
+                    FirebaseConfigMissingScreen()
+                }
+            }
+        }
+    }
+
+    private fun ensureFirebaseInitialized(): Boolean {
+        return try {
+            if (FirebaseApp.getApps(this).isEmpty()) {
+                FirebaseApp.initializeApp(this)
+            }
+            FirebaseApp.getApps(this).isNotEmpty()
+        } catch (_: Exception) {
+            false
+        }
+    }
+}
+
+@Composable
+private fun FirebaseConfigMissingScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Surface(
+            color = MaterialTheme.colorScheme.surface,
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp),
+            shadowElevation = 4.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "મહાદેવ ટ્રેડર્સ",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = BrandCrimson
+                )
+                Text(
+                    text = "આ APK ફાઈલમાં Firebase રૂપરેખાંકન (google-services.json) જોડાયેલું નથી. કૃપા કરીને GitHub Secrets માં GOOGLE_SERVICES_JSON ઉમેરીને ફરીથી APK બિલ્ડ કરો.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
             }
         }
     }
 }
 
 @Composable
-fun AppNavigation(auth: FirebaseAuth = Firebase.auth) {
+fun AppNavigation() {
+    val auth: FirebaseAuth = remember { Firebase.auth }
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val credentialManager = remember { CredentialManager.create(context) }
