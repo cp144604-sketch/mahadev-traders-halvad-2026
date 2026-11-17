@@ -58,10 +58,13 @@ jobs:
       - name: Build Debug APK
         shell: bash
         run: |
+          ls -lh app/google-services.json || echo "NOTICE: app/google-services.json not present in repo"
           set -o pipefail
           if ! gradle assembleDebug --no-daemon --no-configuration-cache --max-workers=2 --console=plain -Dorg.gradle.jvmargs="-Xmx3072m -Dfile.encoding=UTF-8" 2>&1 | tee build.log; then
+            echo "=== COMPILER ERRORS ==="
+            grep -E "^e: |Unresolved|FAILURE:" build.log | head -n 30 || true
             echo "=== FAILURE DETAILS ==="
-            grep -A 25 "What went wrong:" build.log || tail -n 50 build.log
+            grep -A 15 "What went wrong:" build.log || tail -n 30 build.log
             exit 1
           fi
 
