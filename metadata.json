@@ -1,0 +1,6 @@
+{
+  "name": "મહાદેવ ટ્રેડર્સ",
+  "description": "મહાદેવ ટ્રેડર્સ હળવદ - અનાજ અને કરીયાણાના લાઈવ ભાવ, સ્ટોક અને એડમિન મેનેજમેન્ટ એપ.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,244 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated customer profile storing mobile number registration.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the user."
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "10-digit mobile number entered by the customer."
+        },
+        "displayName": {
+          "type": "string",
+          "description": "Customer or shop name."
+        },
+        "email": {
+          "type": "string",
+          "description": "Optional Google account email."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of first registration."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last profile update."
+        }
+      },
+      "required": ["userId", "mobileNumber", "displayName", "createdAt", "updatedAt"]
+    },
+    "WatchlistItem": {
+      "title": "WatchlistItem",
+      "description": "A grain/product saved to the user's personal watchlist (મારી યાદી).",
+      "type": "object",
+      "properties": {
+        "grainId": {
+          "type": "string",
+          "description": "ID of the grain item in /grains."
+        },
+        "addedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp when added to watchlist."
+        }
+      },
+      "required": ["grainId", "addedAt"]
+    },
+    "GrainItem": {
+      "title": "GrainItem",
+      "description": "Grain or grocery product with live price, weight, and stock managed by Admin.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Product name in Gujarati or English."
+        },
+        "category": {
+          "type": "string",
+          "description": "Product category (e.g., અનાજ, કઠોળ, દાળ, કરીયાણું)."
+        },
+        "pricePerKg": {
+          "type": "number",
+          "description": "Current price per unit in INR."
+        },
+        "priceUnit": {
+          "type": "string",
+          "description": "Unit for pricing (e.g., Kg, 20 Kg, લિટર)."
+        },
+        "weight": {
+          "type": "string",
+          "description": "Standard package weight (e.g., 50 Kg (બેગ))."
+        },
+        "stockStatus": {
+          "type": "string",
+          "enum": ["ઉપલબ્ધ", "ઓછો સ્ટોક", "સ્ટોક નથી"],
+          "description": "Current stock availability status."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Optional quality or variety notes."
+        },
+        "iconKey": {
+          "type": "string",
+          "description": "Built-in grain icon identifier."
+        },
+        "imageBase64": {
+          "type": "string",
+          "description": "Optional compressed JPEG thumbnail encoded as Base64."
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "UID of admin who last created or updated the item."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of creation."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last price/weight/stock update."
+        }
+      },
+      "required": [
+        "name",
+        "category",
+        "pricePerKg",
+        "priceUnit",
+        "weight",
+        "stockStatus",
+        "iconKey",
+        "updatedBy",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "LoginLog": {
+      "title": "LoginLog",
+      "description": "Audit record of customer or admin app logins visible to Admin.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the logged-in user."
+        },
+        "mobileNumber": {
+          "type": "string",
+          "description": "10-digit mobile number used during login."
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Name entered at login."
+        },
+        "email": {
+          "type": "string",
+          "description": "Optional Google email."
+        },
+        "loginRole": {
+          "type": "string",
+          "enum": ["customer", "admin"],
+          "description": "Whether login was customer or admin."
+        },
+        "deviceInfo": {
+          "type": "string",
+          "description": "Optional device model descriptor."
+        },
+        "loginAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of login."
+        }
+      },
+      "required": ["userId", "mobileNumber", "customerName", "loginRole", "loginAt"]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Verified admin registration record linked to authorized Mahadev Traders numbers.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Firebase Auth UID of the verified admin."
+        },
+        "mobileNumber": {
+          "type": "string",
+          "enum": ["9879730448", "9727630403"],
+          "description": "Authorized admin mobile number."
+        },
+        "adminLabel": {
+          "type": "string",
+          "description": "Admin display label."
+        },
+        "passcodeHash": {
+          "type": "string",
+          "description": "SHA-256 hash of admin passcode."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of admin verification."
+        }
+      },
+      "required": ["userId", "mobileNumber", "adminLabel", "passcodeHash", "createdAt"]
+    },
+    "StoreConfig": {
+      "title": "StoreConfig",
+      "description": "App download URL and QR poster headline managed by Admin.",
+      "type": "object",
+      "properties": {
+        "downloadUrl": {
+          "type": "string",
+          "description": "Play Store or APK download URL encoded in the QR code."
+        },
+        "headline": {
+          "type": "string",
+          "description": "Headline displayed on the QR download poster."
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "UID of admin who last updated the QR download link."
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Server timestamp of last update."
+        }
+      },
+      "required": ["downloadUrl", "headline", "updatedBy", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Customer profile records isolated to owner and admin."
+    },
+    "/users/{userId}/watchlist/{grainId}": {
+      "schema": { "$ref": "#/entities/WatchlistItem" },
+      "description": "Customer saved watchlist items."
+    },
+    "/grains/{grainId}": {
+      "schema": { "$ref": "#/entities/GrainItem" },
+      "description": "Live grain and grocery price catalog managed by admin and synced to customers."
+    },
+    "/loginLogs/{logId}": {
+      "schema": { "$ref": "#/entities/LoginLog" },
+      "description": "Customer and admin login records viewable by admin."
+    },
+    "/admins/{adminUid}": {
+      "schema": { "$ref": "#/entities/AdminRecord" },
+      "description": "Verified admin records authorizing catalog edits and login log reads."
+    },
+    "/storeConfig/{configId}": {
+      "schema": { "$ref": "#/entities/StoreConfig" },
+      "description": "Store app download link and QR poster settings."
+    }
+  }
+}
