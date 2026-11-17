@@ -23,11 +23,18 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Accept Android SDK Licenses
-        run: yes | sdkmanager --licenses || true
+        shell: bash
+        run: |
+          SDK_DIR="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}}"
+          mkdir -p "$SDK_DIR/licenses"
+          printf "\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > "$SDK_DIR/licenses/android-sdk-license"
+          printf "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$SDK_DIR/licenses/android-sdk-preview-license"
+          printf "\nd975f751698a77b662f1254ddbeed3901e976f5a" > "$SDK_DIR/licenses/intel-android-extra-license"
+          SDKMANAGER=$(find "$SDK_DIR" -name sdkmanager -type f 2>/dev/null | head -n 1 || true)
+          if [ -n "$SDKMANAGER" ]; then
+            yes | "$SDKMANAGER" --licenses >/dev/null 2>&1 || true
+          fi
 
       - name: Set up Gradle 9.3.1
         uses: gradle/actions/setup-gradle@v4
@@ -38,7 +45,7 @@ jobs:
         run: base64 -d debug.keystore.base64 > debug.keystore
 
       - name: Build Debug APK
-        run: gradle assembleDebug --no-daemon
+        run: gradle assembleDebug --no-daemon --stacktrace
 
       - name: Prepare APK file
         run: cp app/build/outputs/apk/debug/app-debug.apk MahadevTraders.apk
